@@ -1,9 +1,11 @@
 import os
-from flask import Flask, request
+from flask import Flask, make_response, request
 
 from lib.database_connection import get_flask_database_connection
 from lib.album_repository import AlbumRepository
 from lib.album import Album
+from lib.artist_repository import ArtistRepository
+from lib.artist import Artist
 
 # Create a new Flask app
 app = Flask(__name__)
@@ -57,6 +59,28 @@ def delete_album(id):
     return "Album deleted successfully"
 
 
+@app.route('/artists', methods = ['GET'])
+def get_artists():
+    connection = get_flask_database_connection(app)
+    repository = ArtistRepository(connection)
+    return "\n".join([
+        str(artist) for artist in repository.all()
+    ])
+
+@app.route('/artists', methods = ['POST'])
+def create_artist():
+    if ('name' not in request.form) or ('genre' not in request.form):
+        response = make_response("Bad Request - Please provide a name and genre!")
+        response.status_code = 400
+        print("if path")
+        print(request.form['name'], request.form['genre'])
+        return response
+
+    connection = get_flask_database_connection(app)
+    repository = ArtistRepository(connection)
+    artist = Artist(None, request.form['name'], request.form['genre'])
+    repository.create(artist)
+    return "Artists added successfully"
 
 # These lines start the server if you run this file directly
 # They also start the server configured to use the test database

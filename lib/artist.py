@@ -13,4 +13,5 @@ class Artist:
 
     # This method makes it look nicer when we print an Artist
     def __repr__(self):
-        return f"Artist({self.id}, {self.name}, {self.genre})"
+        # return f"Artist({self.id}, {self.name}, {self.genre})"
+        return f"{self.name}"

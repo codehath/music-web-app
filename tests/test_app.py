@@ -27,10 +27,74 @@ def test_post_albums(web_client):
     
 
 
+"""
+GET /artists
+  Expected response (200 OK):
+  "Pixies, ABBA, Taylor Swift, Nina Simone"
+"""
+def test_get_artists(web_client):
+    response = web_client.get('/artists')
+    assert response.status_code == 200
+    assert response.data.decode('utf-8') == "Pixies\nABBA\nTaylor Swift\nNina Simone"
 
 
+"""
+POST /artists
+  Parameters:
+    name: Wild Noithing
+    genre: Indie
+  Expected response (200 OK):
+  Pixies, ABBA, Taylor Swift, Nina Simone, Wild nothing
+"""
+def test_post_artists_one(web_client):
+    post_response = web_client.post('/artists', data={'name': 'Wild Nothing', 'genre': 'Indie'})
+    assert post_response.status_code == 200
+    assert post_response.data.decode('utf-8') == 'Artists added successfully'
+
+    response = web_client.get('/artists')
+    assert response.status_code == 200
+    assert response.data.decode('utf-8') == "Pixies\nABBA\nTaylor Swift\nNina Simone\nWild Nothing"
 
 
+"""
+POST /artists
+  Parameters:
+    name: Wild Noithing
+    genre: Indie
+  Expected response (400 Bad Request)
+"""
+def test_post_artists_only_name_passed(web_client):
+    post_response = web_client.post('/artists', data={'name': 'Wild Nothing'})
+    assert post_response.status_code == 400
+    assert post_response.data.decode('utf-8') == 'Bad Request - Please provide a name and genre!'
+
+
+"""
+POST /artists
+  Parameters:
+    name: Wild Noithing
+    genre: Indie
+  Expected response (200 OK):
+  Pixies, ABBA, Taylor Swift, Nina Simone, Wild nothing
+"""
+def test_post_artists_only_genre_passed(web_client):
+    post_response = web_client.post('/artists', data={'genre': 'Indie'})
+    assert post_response.status_code == 400
+    assert post_response.data.decode('utf-8') == 'Bad Request - Please provide a name and genre!'
+
+
+"""
+POST /artists
+  Parameters:
+    name: Wild Noithing
+    genre: Indie
+  Expected response (200 OK):
+  Pixies, ABBA, Taylor Swift, Nina Simone, Wild nothing
+"""
+def test_post_artists_none(web_client):
+    post_response = web_client.post('/artists')
+    assert post_response.status_code == 400
+    assert post_response.data.decode('utf-8') == 'Bad Request - Please provide a name and genre!'
 
 
 
